@@ -1,0 +1,8 @@
+[workspace]
+members = [
+    "components/bitvm-cli",
+    "components/bitvm-core",
+    "components/bitvm-types"
+]
+default-members = ["components/bitvm-cli"]
+resolver = "2"

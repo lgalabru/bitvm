@@ -1,0 +1,28 @@
+[package]
+name = "bitvm-cli"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "bitvm"
+path = "src/main.rs"
+
+[dependencies]
+bitvm = { path = "../bitvm-core" }
+bitvm_types = { path = "../bitvm-types" }
+hiro-system-kit = "0.3.1"
+clap = { version = "4.4.6", features = ["derive"], optional = true }
+clap_generate = { version = "3.0.3", optional = true }
+toml = { version = "0.8.2", features = ["preserve_order"], optional = true }
+ctrlc = { version = "3.2.2", optional = true }
+chainhook-sdk = { version = "=0.10.1", default-features = false, features = ["zeromq", "log"] }
+# chainhook-sdk = { version = "=0.10.1", path = "../../../chainhook/components/chainhook-sdk", default-features = false, features = ["zeromq", "log"] }
+serde = "1"
+serde_json = "1"
+serde_derive = "1"
+
+[features]
+default = ["cli"]
+cli = ["clap", "clap_generate", "toml", "ctrlc", "hiro-system-kit/log"]
+debug = ["hiro-system-kit/debug"]
+release = ["hiro-system-kit/release"]

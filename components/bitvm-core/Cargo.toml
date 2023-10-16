@@ -1,0 +1,9 @@
+[package]
+name = "bitvm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bitvm_types = { path = "../bitvm-types" }
+pest = { version = "2" }
+pest_derive = { version = "2" }

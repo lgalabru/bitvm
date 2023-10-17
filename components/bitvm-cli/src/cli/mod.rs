@@ -1,5 +1,6 @@
 use crate::config::generator::generate_config;
 use crate::config::Config;
+use bitvm::SerializedCircuit;
 use chainhook_sdk::bitcoincore_rpc::{Auth, Client, RpcApi};
 use chainhook_sdk::types::BitcoinNetwork;
 use chainhook_sdk::utils::Context;
@@ -157,7 +158,9 @@ async fn handle_command(opts: Opts, _ctx: &Context) -> Result<(), String> {
                     .map_err(|e| {
                         format!("unable to read circuit {}\n{}", file_path.display(), e)
                     })?;
-                bitvm::bristol::parser::read_circuit_bristol_format(&circuit_content)
+                let circuit =
+                    bitvm::read_and_check_circuit(&SerializedCircuit::Bristol(&circuit_content))?;
+                println!("{}", circuit);
             }
         },
     }

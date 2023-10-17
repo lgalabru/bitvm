@@ -1,4 +1,6 @@
 field = { (ASCII_DIGIT)+ }
-and = { (field ~ " "){5} ~ "AND" }
 inv = { (field ~ " "){4} ~ "INV" }
-file = { SOI ~ ((and | inv) ~ ("\r\n" | "\n"))* ~ EOI }
+nand = { (field ~ " "){5} ~ "NAND" }
+and = { (field ~ " "){5} ~ "AND" }
+xor = { (field ~ " "){5} ~ "XOR" }
+file = { SOI ~ ((and | inv | nand | xor) ~ ("\r\n" | "\n"))* ~ EOI }

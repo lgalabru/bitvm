@@ -96,11 +96,21 @@ pub fn parse_1_input_1_output(record: Pair<'_, Rule>) -> (u64, u64) {
 }
 
 #[test]
-fn test_bristol_parse() {
+fn test_bristol_parse_test_vector_1() {
     let circuit = read_circuit(include_str!("fixtures/test_vector_1.bristol"))
         .expect("unable to parse bristol");
     assert_eq!(
         format!("{}", circuit),
         "<Circuit id=0 and=5 inv=6 nand=1 xor=1>".to_string()
+    )
+}
+
+#[test]
+fn test_bristol_parse_test_vector_2() {
+    let circuit = read_circuit(include_str!("fixtures/test_vector_2.bristol"))
+        .expect("unable to parse bristol");
+    assert_eq!(
+        format!("{}", circuit),
+        "<Circuit id=0 and=63 inv=64 nand=0 xor=0>".to_string()
     )
 }

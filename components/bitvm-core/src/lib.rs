@@ -14,5 +14,9 @@ pub fn read_and_check_circuit(serialized_circuit: &SerializedCircuit) -> Result<
         SerializedCircuit::Bristol(src) => bristol::parser::read_circuit(src)?,
     };
 
+    let top_level_gates_ids = circuit.collect_top_level_gates_ids();
+    let bit_commitment_preimages = circuit.collect_gates_bit_commitments_preimages(&top_level_gates_ids);
+    let subsequent_commitment_preimages = circuit.collect_subsequent_gates_bit_commitments_preimages(&top_level_gates_ids);
+
     Ok(circuit)
 }

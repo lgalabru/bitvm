@@ -1,5 +1,5 @@
 use bitvm_types::{Circuit, Gate};
-use pest::{Parser, iterators::Pair};
+use pest::{iterators::Pair, Parser};
 use pest_derive::Parser;
 
 #[derive(Parser)]
@@ -20,27 +20,20 @@ pub fn read_circuit(circuit_source: &str) -> Result<Circuit, String> {
         match record.as_rule() {
             Rule::and => {
                 let (gate_id, input_1_id, input_2_id) = parse_2_inputs_1_output(record);
-                circuit
-                    .gates
-                    .insert(gate_id, Gate::And(input_1_id, input_2_id));
+                circuit.insert_gate(gate_id, Gate::And(input_1_id, input_2_id));
             }
             Rule::nand => {
                 let (gate_id, input_1_id, input_2_id) = parse_2_inputs_1_output(record);
-                circuit
-                    .gates
-                    .insert(gate_id, Gate::Nand(input_1_id, input_2_id));
+                circuit.insert_gate(gate_id, Gate::Nand(input_1_id, input_2_id));
             }
             Rule::xor => {
                 let (gate_id, input_1_id, input_2_id) = parse_2_inputs_1_output(record);
-                circuit
-                    .gates
-                    .insert(gate_id, Gate::Xor(input_1_id, input_2_id));
+                circuit.insert_gate(gate_id, Gate::Xor(input_1_id, input_2_id));
             }
             Rule::inv => {
                 let (gate_id, input_id) = parse_1_input_1_output(record);
-                circuit.gates.insert(gate_id, Gate::Inv(input_id));
+                circuit.insert_gate(gate_id, Gate::Inv(input_id));
             }
-            Rule::EOI => (),
             _ => {}
         }
     }

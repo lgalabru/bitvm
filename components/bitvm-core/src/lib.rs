@@ -13,6 +13,6 @@ pub fn read_and_check_circuit(serialized_circuit: &SerializedCircuit) -> Result<
     let circuit = match serialized_circuit {
         SerializedCircuit::Bristol(src) => bristol::parser::read_circuit(src)?,
     };
-    
+
     Ok(circuit)
 }

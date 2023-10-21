@@ -30,7 +30,7 @@ impl BitCommitmentPreimages {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct BitCommitmentHashes([u8; 32], [u8; 32]);
+pub struct BitCommitmentHashes(pub [u8; 32], pub [u8; 32]);
 
 #[derive(Debug, PartialEq)]
 pub struct Circuit {

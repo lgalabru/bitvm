@@ -1,9 +1,16 @@
+use bitcoin::secp256k1::{PublicKey, SecretKey};
+use bitcoin::secp256k1::{self, Secp256k1};
 use bitvm_types::Circuit;
+use tapleaf::compute_commitment_address;
+use rand::{thread_rng, Rng};
+use sha2::{Digest, Sha256};
+
 
 extern crate pest;
 
 pub mod bristol;
 pub mod circuit;
+pub mod tapleaf;
 
 pub enum SerializedCircuit<'a> {
     Bristol(&'a str),
@@ -14,11 +21,17 @@ pub fn read_and_check_circuit(serialized_circuit: &SerializedCircuit) -> Result<
         SerializedCircuit::Bristol(src) => bristol::parser::read_circuit(src)?,
     };
 
-    let top_level_gates_ids = circuit.collect_top_level_gates_ids();
-    let bit_commitment_preimages =
-        circuit.collect_gates_bit_commitments_preimages(&top_level_gates_ids);
-    let subsequent_commitment_preimages =
-        circuit.collect_subsequent_gates_bit_commitments_preimages(&top_level_gates_ids);
+    let secp: Secp256k1<secp256k1::All> = Secp256k1::new();
 
+    let paul_secret = {
+        let seed = Sha256::digest(&[0]);
+        SecretKey::from_slice(&seed).unwrap()
+    };
+    let vicky_secret = {
+        let seed = Sha256::digest(&[0]);
+        SecretKey::from_slice(&seed).unwrap()
+    };
+
+    compute_commitment_address(&circuit, &secp, &paul_secret.public_key(&secp), &vicky_secret.public_key(&secp));
     Ok(circuit)
 }

@@ -1,8 +1,7 @@
-use bitcoin::secp256k1::{PublicKey, SecretKey};
+use bitcoin::secp256k1::SecretKey;
 use bitcoin::secp256k1::{self, Secp256k1};
 use bitvm_types::Circuit;
-use tapleaf::compute_commitment_address;
-use rand::{thread_rng, Rng};
+use tapleaf::commitment_address::compute_commitment_address;
 use sha2::{Digest, Sha256};
 
 

@@ -70,6 +70,9 @@ enum CircuitsCommand {
     /// Check Bristol file
     #[clap(name = "check", bin_name = "check")]
     Check(CheckCircuit),
+    /// Simulate Bristol file
+    #[clap(name = "simulate", bin_name = "simulate")]
+    Simulate(SimulateCircuit),    
 }
 
 #[derive(Parser, PartialEq, Clone, Debug)]
@@ -83,6 +86,25 @@ struct CheckCircuit {
     /// Bristol file path
     pub bristol_file_path: String,
 }
+
+#[derive(Parser, PartialEq, Clone, Debug)]
+struct SimulateCircuit {
+    /// Bristol file path
+    pub bristol_file_path: String,
+    /// Simulate as prover
+    #[clap(
+        long = "prover",
+        conflicts_with = "verifier",
+    )]
+    pub prover: bool,
+    /// Simulate as verifier
+    #[clap(
+        long = "verifier",
+        conflicts_with = "prover",
+    )]
+    pub verifier: bool,   
+}
+
 
 pub fn main() {
     let logger = hiro_system_kit::log::setup_logger();
@@ -146,21 +168,35 @@ async fn handle_command(opts: Opts, _ctx: &Context) -> Result<(), String> {
                 println!("Created circuit {}.bristol", cmd.bristol_file_path);
             }
             CircuitsCommand::Check(cmd) => {
-                let mut file_path = PathBuf::new();
-                file_path.push(format!("{}.bristol", cmd.bristol_file_path));
-                let mut circuit_file = File::open(&cmd.bristol_file_path).map_err(|e| {
-                    format!("unable to open circuit {}\n{}", file_path.display(), e)
+                let mut circuit_file: File = File::open(&cmd.bristol_file_path).map_err(|e| {
+                    format!("unable to open circuit {}\n{}", cmd.bristol_file_path, e)
                 })?;
 
                 let mut circuit_content = String::new();
                 circuit_file
                     .read_to_string(&mut circuit_content)
                     .map_err(|e| {
-                        format!("unable to read circuit {}\n{}", file_path.display(), e)
+                        format!("unable to read circuit {}\n{}", cmd.bristol_file_path, e)
                     })?;
                 let circuit =
                     bitvm::read_and_check_circuit(&SerializedCircuit::Bristol(&circuit_content))?;
                 println!("{}", circuit);
+            }
+            CircuitsCommand::Simulate(cmd) => {
+                let mut circuit_file: File = File::open(&cmd.bristol_file_path).map_err(|e| {
+                    format!("unable to open circuit {}\n{}", cmd.bristol_file_path, e)
+                })?;
+
+                let mut circuit_content = String::new();
+                circuit_file
+                    .read_to_string(&mut circuit_content)
+                    .map_err(|e| {
+                        format!("unable to read circuit {}\n{}", cmd.bristol_file_path, e)
+                    })?;
+                let circuit =
+                    bitvm::read_and_check_circuit(&SerializedCircuit::Bristol(&circuit_content))?;
+                println!("{}", circuit);
+
             }
         },
     }

@@ -5,9 +5,10 @@ use std::collections::{BTreeMap, HashMap, HashSet};
 
 type CircuitId = u64;
 type GateId = u64;
+type WireId = u64;
 
 #[derive(Debug, PartialEq)]
-pub struct BitCommitmentPreimages([u8; 32], [u8; 32]);
+pub struct BitCommitmentPreimages(pub [u8; 32], pub [u8; 32]);
 
 impl BitCommitmentPreimages {
     pub fn new() -> Self {
@@ -36,8 +37,8 @@ pub struct BitCommitmentHashes(pub [u8; 32], pub [u8; 32]);
 pub struct Circuit {
     pub circuit_id: CircuitId,
     pub gates: HashMap<GateId, Gate>,
-    pub gates_bit_commitments_preimages: HashMap<GateId, BitCommitmentPreimages>,
-    pub reverse_lookup: HashMap<GateId, HashSet<GateId>>,
+    pub gates_bit_commitments_preimages: HashMap<WireId, BitCommitmentPreimages>,
+    pub reverse_lookup: HashMap<WireId, HashSet<GateId>>,
 }
 
 impl Circuit {
@@ -93,7 +94,7 @@ impl Circuit {
         self.gates.insert(gate_id, gate);
     }
 
-    pub fn collect_top_level_gates_ids(&self) -> Vec<&GateId> {
+    pub fn collect_input_wires_ids(&self) -> Vec<&WireId> {
         let mut hash_set = HashSet::new();
         for (_gate_id, gate) in self.gates.iter() {
             match gate {
@@ -114,9 +115,22 @@ impl Circuit {
                 }
             }
         }
-        let mut top_level_gates_ids = hash_set.into_iter().collect::<Vec<_>>();
-        top_level_gates_ids.sort();
-        top_level_gates_ids
+        let mut gates_ids = hash_set.into_iter().collect::<Vec<_>>();
+        gates_ids.sort();
+        gates_ids
+    }
+
+    pub fn collect_intermediaries_wires_ids(&self) -> Vec<GateId> {
+        let inputs = self.collect_input_wires_ids();        
+        let mut hash_set = HashSet::new();
+        for (gate_id, _gate) in self.gates.iter() {
+            if !inputs.contains(&gate_id) {
+                hash_set.insert(*gate_id);
+            }
+        }
+        let mut gates_ids = hash_set.into_iter().collect::<Vec<_>>();
+        gates_ids.sort();
+        gates_ids
     }
 
     pub fn collect_gates_bit_commitments_preimages<'a>(
@@ -167,10 +181,10 @@ impl Circuit {
 
 #[derive(Debug, PartialEq)]
 pub enum Gate {
-    Nand(GateId, GateId),
-    Inv(GateId),
-    And(GateId, GateId),
-    Xor(GateId, GateId),
+    Nand(WireId, WireId),
+    Inv(WireId),
+    And(WireId, WireId),
+    Xor(WireId, WireId),
 }
 
 impl fmt::Display for Circuit {
